@@ -7,7 +7,7 @@ export type Database = {
     Tables: {
       purchases: { Row: Purchase; Insert: Omit<Purchase, 'id' | 'created_at' | 'confirmed_at' | 'status'> & { status?: 'pending' | 'confirmed' }; Update: Partial<Purchase> };
       numbers: { Row: NumberRow; Insert: NumberRow; Update: Partial<NumberRow> };
-      raffle_state: { Row: RaffleState; Insert: RaffleState; Update: Partial<RaffleState> };
+      raffle_state: { Row: RaffleState; Insert: Partial<RaffleState> & { id: number }; Update: Partial<RaffleState> };
     };
   };
 };

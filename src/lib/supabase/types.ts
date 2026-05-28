@@ -15,7 +15,9 @@ export type NumberRow = {
 };
 
 export type RaffleState = {
-  id: 1;
+  // CHECK constraint in the DB enforces id = 1. We use `number` here (not the
+  // literal `1`) so Supabase's typed `.eq('id', 1)` filter doesn't narrow to `never`.
+  id: number;
   winning_number: number | null;
   closed_at: string | null;
 };

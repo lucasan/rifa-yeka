@@ -3,7 +3,7 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { NumberGrid } from '@/components/NumberGrid';
 import { Flyer } from '@/components/Flyer';
 import { WinnerBanner } from '@/components/WinnerBanner';
-import type { GridCell } from '@/lib/supabase/types';
+import type { GridCell, RaffleState } from '@/lib/supabase/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,10 +21,10 @@ async function loadGrid(): Promise<GridCell[]> {
   }));
 }
 
-async function loadRaffleState(): Promise<{ winning_number: number | null; closed_at: string | null } | null> {
+async function loadRaffleState(): Promise<RaffleState | null> {
   const sb = supabaseServer();
   const { data } = await sb.from('raffle_state').select('*').eq('id', 1).single();
-  return (data as any) ?? null;
+  return data as RaffleState | null;
 }
 
 async function loadWinnerName(winningNumber: number): Promise<string | null> {
