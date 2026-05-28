@@ -4,9 +4,11 @@ function required(name: string): string {
   return value;
 }
 
-export const YEKA_WHATSAPP = process.env.YEKA_WHATSAPP ?? '+573244255786';
-export const NEQUI_NUMBER = process.env.NEQUI_NUMBER ?? '3164959139';
-export const NEQUI_NAME = process.env.NEQUI_NAME ?? 'Lucas Torres';
+// `||` (not `??`) so that an empty-string env value falls back to the default.
+// Prevents broken links if .env.local is copied from .env.example and not filled.
+export const YEKA_WHATSAPP = process.env.YEKA_WHATSAPP?.trim() || '+573244255786';
+export const NEQUI_NUMBER = process.env.NEQUI_NUMBER?.trim() || '3164959139';
+export const NEQUI_NAME = process.env.NEQUI_NAME?.trim() || 'Lucas Torres';
 
 export const TOTAL_NUMBERS = 100;
 export const NUMBERS_PER_PURCHASE = 5;
