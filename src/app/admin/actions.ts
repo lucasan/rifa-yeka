@@ -19,7 +19,8 @@ export async function confirmPurchase(formData: FormData) {
   const { error } = await sb
     .from('purchases')
     .update({ status: 'confirmed', confirmed_at: new Date().toISOString() } as never)
-    .eq('id', id);
+    .eq('id', id)
+    .select();
   if (error) throw error;
   revalidatePath('/admin');
   revalidatePath('/');
@@ -29,7 +30,11 @@ export async function resetPurchase(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get('id') ?? '');
   const sb = supabaseServer();
-  const { error: updErr } = await sb.from('numbers').update({ purchase_id: null } as never).eq('purchase_id', id);
+  const { error: updErr } = await sb
+    .from('numbers')
+    .update({ purchase_id: null } as never)
+    .eq('purchase_id', id)
+    .select();
   if (updErr) throw updErr;
   const { error: delErr } = await sb.from('purchases').delete().eq('id', id);
   if (delErr) throw delErr;
@@ -44,10 +49,13 @@ export async function closeRaffle(formData: FormData) {
     throw new Error('número ganador inválido');
   }
   const sb = supabaseServer();
+  // `.select()` forces the call to wait for the round-trip so revalidatePath
+  // sees a settled write before we return.
   const { error } = await sb
     .from('raffle_state')
     .update({ winning_number: winning, closed_at: new Date().toISOString() } as never)
-    .eq('id', 1);
+    .eq('id', 1)
+    .select();
   if (error) throw error;
   revalidatePath('/admin');
   revalidatePath('/');
@@ -59,7 +67,8 @@ export async function reopenRaffle() {
   const { error } = await sb
     .from('raffle_state')
     .update({ winning_number: null, closed_at: null } as never)
-    .eq('id', 1);
+    .eq('id', 1)
+    .select();
   if (error) throw error;
   revalidatePath('/admin');
   revalidatePath('/');

@@ -34,9 +34,11 @@ test('admin confirms purchase and closes raffle', async ({ page }) => {
   await expect(page.getByText('✅ Confirmado')).toBeVisible();
 
   // close raffle with winning number 0
-  page.once('dialog', (d) => d.accept());
   await page.locator('input[name="winning_number"]').fill('0');
   await page.getByRole('button', { name: 'Cerrar rifa' }).click();
+
+  // wait for the admin page to reflect the closed state before navigating away
+  await expect(page.getByText(/Número ganador actual/)).toBeVisible();
 
   // verify winner banner on public site
   await page.goto('/');
