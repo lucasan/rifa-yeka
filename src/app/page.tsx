@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { supabaseServer } from '@/lib/supabase/server';
 import { NumberGrid } from '@/components/NumberGrid';
+import { ReserveForm } from '@/components/ReserveForm';
 import { Flyer } from '@/components/Flyer';
 import { WinnerBanner } from '@/components/WinnerBanner';
 import type { GridCell, RaffleState } from '@/lib/supabase/types';
@@ -49,28 +49,14 @@ export default async function HomePage() {
       <Flyer />
 
       <section className="max-w-2xl mx-auto px-4 pb-10">
-        <h2 className="text-xl font-bold text-center mb-2">Escoge tus números</h2>
         <p className="text-center text-sm mb-4 opacity-80">
           Quedan <span className="font-bold">{available}</span> de 100 números libres
         </p>
 
-        <NumberGrid initialCells={cells} disabled={isClosed} />
-
-        {!isClosed && (
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
-            <Link
-              href="/apartar"
-              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-xl text-center"
-            >
-              Escoger 5 manualmente
-            </Link>
-            <Link
-              href="/apartar?random=1"
-              className="bg-pink-500 hover:bg-pink-600 text-white font-semibold px-6 py-3 rounded-xl text-center"
-            >
-              Sorpréndeme (5 al azar)
-            </Link>
-          </div>
+        {isClosed ? (
+          <NumberGrid initialCells={cells} disabled />
+        ) : (
+          <ReserveForm initialCells={cells} />
         )}
       </section>
     </main>

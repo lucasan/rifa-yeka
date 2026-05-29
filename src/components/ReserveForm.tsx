@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { NumberGrid } from '@/components/NumberGrid';
 import type { GridCell } from '@/lib/supabase/types';
 import { pad2 } from '@/lib/whatsapp';
@@ -21,23 +21,12 @@ function pickRandom(cells: GridCell[], count = 5): number[] {
 
 export function ReserveForm({ initialCells }: Props) {
   const router = useRouter();
-  const params = useSearchParams();
-  const wantRandom = params.get('random') === '1';
-
   const [cells] = useState(initialCells);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (wantRandom && selected.size === 0) {
-      const picked = pickRandom(cells);
-      if (picked.length === 5) setSelected(new Set(picked));
-      else setError(`Solo quedan ${picked.length} números libres. Escógelos manualmente.`);
-    }
-  }, [wantRandom]);
 
   const sortedSelected = useMemo(
     () => [...selected].sort((a, b) => a - b),
@@ -51,6 +40,16 @@ export function ReserveForm({ initialCells }: Props) {
       else if (next.size < 5) next.add(n);
       return next;
     });
+  }
+
+  function randomPick() {
+    const picked = pickRandom(cells);
+    if (picked.length === 5) {
+      setSelected(new Set(picked));
+      setError(null);
+    } else {
+      setError(`Solo quedan ${picked.length} números libres. Escógelos manualmente.`);
+    }
   }
 
   const canSubmit = name.trim().length >= 2 && /^\+?[\d\s]{7,20}$/.test(phone) && selected.size === 5 && !submitting;
@@ -94,12 +93,19 @@ export function ReserveForm({ initialCells }: Props) {
   }
 
   return (
-    <form onSubmit={submit} className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-      <h1 className="text-2xl font-bold text-center">Apartar mis números</h1>
-
-      <p className="text-center text-sm opacity-80">
-        Toca para seleccionar 5 números ({selected.size}/5 escogidos)
-      </p>
+    <form onSubmit={submit} className="space-y-5">
+      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+        <p className="text-sm opacity-80 order-2 sm:order-1">
+          Toca para escoger 5 números <span className="font-bold">({selected.size}/5)</span>
+        </p>
+        <button
+          type="button"
+          onClick={randomPick}
+          className="order-1 sm:order-2 bg-pink-500 hover:bg-pink-600 text-white font-semibold px-4 py-2 rounded-xl text-sm w-full sm:w-auto"
+        >
+          Sorpréndeme (5 al azar)
+        </button>
+      </div>
 
       <NumberGrid initialCells={cells} selected={selected} onToggle={toggle} />
 

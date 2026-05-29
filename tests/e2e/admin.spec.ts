@@ -9,7 +9,7 @@ test.beforeEach(async () => { await resetDb(); });
 test.afterAll(async () => { await resetDb(); });
 
 async function reserveAs(page: any, name: string, nums = [0, 1, 2, 3, 4]) {
-  await page.goto('/apartar');
+  await page.goto('/');
   for (const n of nums) {
     await page.getByRole('button', { name: n.toString().padStart(2, '0') }).click();
   }

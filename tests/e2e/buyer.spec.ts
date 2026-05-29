@@ -5,9 +5,8 @@ test.beforeEach(async () => { await resetDb(); });
 test.afterAll(async () => { await resetDb(); });
 
 test('buyer can reserve 5 numbers and reach payment page', async ({ page }) => {
-  await page.goto('/apartar');
+  await page.goto('/');
 
-  // Select first 5 available numbers
   for (const n of [0, 1, 2, 3, 4]) {
     await page.getByRole('button', { name: n.toString().padStart(2, '0') }).click();
   }
@@ -22,8 +21,10 @@ test('buyer can reserve 5 numbers and reach payment page', async ({ page }) => {
   await expect(page.getByRole('link', { name: /Ya pagué/ })).toBeVisible();
 });
 
-test('random pick works', async ({ page }) => {
-  await page.goto('/apartar?random=1');
+test('random pick fills 5 numbers and submits', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: /Sorpr[eé]ndeme/ }).click();
+  await expect(page.getByText(/\(5\/5\)/)).toBeVisible();
   await page.getByLabel('Tu nombre').fill('Bea');
   await page.getByLabel('Tu WhatsApp').fill('3009999999');
   await page.getByRole('button', { name: /Apartar mis 5 números/ }).click();
